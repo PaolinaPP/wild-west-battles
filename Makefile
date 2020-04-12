@@ -3,6 +3,7 @@ CC=gcc
 CFLAGS=-I$(IDIR)
 
 ODIR=obj
+$(shell [ -d $(ODIR) ] || mkdir -p $(ODIR))
 
 LIBS=-lpthread
 
