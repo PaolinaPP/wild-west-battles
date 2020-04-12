@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include<fcntl.h> 
+#include <fcntl.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "fighters-map.h"
 
@@ -20,7 +22,7 @@ int hashCode(struct table *t,int key){
     return key%t->size;
 }
 
-void insert(struct table *t,int key,char * name, char health){
+void insert(struct table *t,int key,char *name, char health){
     int pos = hashCode(t,key);
     struct node *list = t->list[pos];
     struct node *newNode = (struct node*)malloc(sizeof(struct node));
@@ -54,11 +56,21 @@ struct node *lookup(struct table *t,int key){
 }
 
 int readFightersFromFile(char *fileName){
-    int key;
-    char *name;
-    char health;
+    printf("in readFightersFromFile1\n");
+    int key = 0;
+    char *name = NULL;
+    char health = 0;
     int fd = open(fileName, O_RDONLY);
+    printf("in readFightersFromFile\n");
     if(fd < 0)
         return -1;
-    
+    while(read(fd, &key, sizeof(int)) > 0){
+        if(!(read(fd, name, sizeof(char) * 50) > 0))
+            return -1;
+        if(!(read(fd, &health, sizeof(char)) > 0))
+            return -1;
+        key=0;
+        memset(name, ' ', sizeof(char) * 50);
+        health=0;
+    }
 }

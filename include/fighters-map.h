@@ -3,7 +3,7 @@
 
 struct node{
     int key;
-    char * name;
+    char *name;
     char health;
     struct node *next;
 };
@@ -15,7 +15,8 @@ struct table{
 
 struct table *createTable(int size);
 int hashCode(struct table *t,int key);
-void insert(struct table *t,int key,char * name, char health);
+void insert(struct table *t,int key,char *name, char health);
 struct node *lookup(struct table *t,int key);
+int readFightersFromFile(char *fileName);
 
 #endif /* FIGHTERS_MAP_H_ */
