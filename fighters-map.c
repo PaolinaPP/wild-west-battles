@@ -6,7 +6,8 @@
 
 #include "fighters-map.h"
 
-struct table *createTable(int size){
+struct table *createTable(int size)
+{
     struct table *t = (struct table*)malloc(sizeof(struct table));
     t->size = size;
     t->list = (struct node**)malloc(sizeof(struct node*)*size);
@@ -16,19 +17,23 @@ struct table *createTable(int size){
     return t;
 }
 
-int hashCode(struct table *t,int key){
-    if(key<0)
+int hashCode(struct table *t,int key)
+{
+    if(key < 0)
         return -(key%t->size);
     return key%t->size;
 }
 
-void insert(struct table *t,int key,char *name, char health){
+void insert(struct table *t,int key,char *name, char health)
+{
     int pos = hashCode(t,key);
     struct node *list = t->list[pos];
     struct node *newNode = (struct node*)malloc(sizeof(struct node));
     struct node *temp = list;
-    while(temp){
-        if(temp->key == key){
+    while(temp)
+    {
+        if(temp->key == key)
+        {
             temp->name = name;
             temp->health = health;
             return;
@@ -42,12 +47,15 @@ void insert(struct table *t,int key,char *name, char health){
     t->list[pos] = newNode;
 }
 
-struct node *lookup(struct table *t,int key){
+struct node *lookup(struct table *t,int key)
+{
     int pos = hashCode(t,key);
     struct node *list = t->list[pos];
     struct node *temp = list;
-    while(temp){
-        if(temp->key==key){
+    while(temp)
+    {
+        if(temp->key==key)
+        {
             return temp;
         }
         temp = temp->next;
@@ -55,7 +63,32 @@ struct node *lookup(struct table *t,int key){
     return NULL;
 }
 
-int readFightersFromFile(char *fileName){
+int delete(struct table *t,int key)
+{
+    int pos = hashCode(t,key);
+    struct node *list = t->list[pos];
+    struct node **temp = &list;
+    struct node *e;
+    while(*temp)
+    {
+        if((*temp)->key==key)
+        {
+            e = *temp;
+            *temp = e->next;
+
+            free(e);
+
+            return 1;
+        }
+        temp = &((*temp)->next);
+    }
+    return 0;
+
+}
+
+
+int readFightersFromFile(char *fileName)
+{
     printf("in readFightersFromFile1\n");
     int key = 0;
     char *name = NULL;
@@ -64,7 +97,8 @@ int readFightersFromFile(char *fileName){
     printf("in readFightersFromFile\n");
     if(fd < 0)
         return -1;
-    while(read(fd, &key, sizeof(int)) > 0){
+    while(read(fd, &key, sizeof(int)) > 0)
+    {
         if(!(read(fd, name, sizeof(char) * 50) > 0))
             return -1;
         if(!(read(fd, &health, sizeof(char)) > 0))
