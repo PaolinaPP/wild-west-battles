@@ -17,52 +17,44 @@ int array_of_keys[ALL_PEOPLE];
 int main(int argc, char *argv[])
 {
     pthread_t fighters_th[NUM_THREADS];
-    struct table *t = createTable(alive_people);
+    struct table *t = create_table(alive_people);
     struct node *fighters[NUM_THREADS];
     int fighter_map_key[NUM_THREADS], fighter_array_number[NUM_THREADS], i;
 
-    if (sem_init(&lock, 0, 1) != 0)
-    {
-        printf("\n Mutex initialization failed\n");
-        return 1;
-    }
+    initialize_mutex(); //initialize mutex to use it later
 
-    insertPeople(t);
+    insert_people(t); //insert people to map
     
-    while(alive_people > 0)
+    while(alive_people > 0) //loop running while there are stile alive people
     {
-        getFighters(&fighter_map_key[0], &fighter_map_key[1], &fighter_array_number[0], &fighter_array_number[1]);
-
+        get_fighters(&fighter_map_key[0], &fighter_map_key[1], &fighter_array_number[0], &fighter_array_number[1]); //calling function to get 2 RANDOM fighters
 
         for(i = 0; i < NUM_THREADS; i++)
         {
-            fighters[i] = lookup(t, fighter_map_key[i]);
-            printf("fighter health: %d name: %s\n", fighters[i]->health, fighters[i]->name);
-            if(pthread_create(&fighters_th[i], NULL, fighterFunc, (void *)&fighters[i]))
+            fighters[i] = lookup(t, fighter_map_key[i]); //getting fighters nodes of map
+            printf("fighter health: %d name: %s key: %d\n", fighters[i]->health, fighters[i]->name, fighters[i]->key);
+            if(pthread_create(&fighters_th[i], NULL, fighter_func, (void *)&fighters[i])) //creating fighter thread
             {
                 printf("Error in creating posix thread!");
             }
-            
         }
 
         for(i = 0; i < NUM_THREADS; i++)
         {
-            pthread_join(fighters_th[i], NULL);
+            pthread_join(fighters_th[i], NULL); //join threads
         }
 
         for(i = 0; i < NUM_THREADS; i++)
         {
-            if(fighters[i]->health < 1)
+            if(fighters[i]->health < 1) //if the fighter has no more health
             {
-                array_of_keys[fighter_array_number[i]] = -1;
+                array_of_keys[fighter_array_number[i]] = -1; //set -1 value to array_of_keys to mark the fighter has no more health
             }
         }
 
         alive_people--;
-
-        pthread_exit(NULL);
     }
-    //pthread_exit(NULL);
+    pthread_exit(NULL);
 
     //printf("%d %d\n", fighters[0], fighters[1]);
     //struct node *fighter = lookup(t,5);
@@ -73,7 +65,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void insertPeople(struct table *t)
+void insert_people(struct table *t)
 {
     int i;
 
@@ -90,41 +82,65 @@ void insertPeople(struct table *t)
     
 }
 
-void getFighters(int *fighter1, int *fighter2, int *fighter1_array_number, int *fighter2_array_number)
+/***************************************************
+*   function name: initialize_mutex                *
+*   function parameters: no parameters             *
+*   function description: initialize mutex to use  *
+*       it later in therads                        *
+****************************************************/
+void initialize_mutex()
+{
+    if (sem_init(&lock, 0, 1) != 0)
+    {
+        printf("\n Mutex initialization failed\n");
+    }
+}
+
+/***************************************************
+*   function name: get_fighters                    *
+*   function parameters: int *fighter1             *
+*                        int *fighter2             *
+*                        int *fighter1_array_number*
+*                        int *fighter2_array_number*
+*   function description: get random 2 random      *
+*        numbers which are 2 alive fighters        *
+****************************************************/
+void get_fighters(int *fighter1, int *fighter2, int *fighter1_array_number, int *fighter2_array_number)
 {
     int i, key1 = 0, key2 = 0;
 
     do{
         key1 = (rand() % ((alive_people - 1) + 1));
         key2 = (rand() % ((alive_people - 1) + 1));
-    }while(key1 == key2);
+    }while(key1 == key2); //loop while both keys are not different numbers between 1 and alive_people
 
-    if(alive_people == ALL_PEOPLE)
+    if(alive_people == ALL_PEOPLE) //if all fighters ara alive
     {
+        //all people in array are alive, so we can take the same numbers
         *fighter1 = array_of_keys[key1];
         *fighter2 = array_of_keys[key2];
         *fighter1_array_number = key1;
         *fighter2_array_number = key2;
     }
-    else 
+    else //if not all fighters are alive
     {
-        for(i = 0; i < ALL_PEOPLE; i++)
+        for(i = 0; i < ALL_PEOPLE; i++) //loop over the array
         {
-            if(key1 < 0 && key2 < 0)
+            if(key1 < 0 && key2 < 0) //check if both keys are less than 0
             {
                 break;
             }
-            if(key1 == 0)
+            if(key1 == 0) //if the first key is 0, this means  that the persent on this position is the first figter
             {
                 *fighter1 = array_of_keys[i];
                 *fighter1_array_number = i;
             }
-            if(key2 == 0)
+            if(key2 == 0) //if the second key is 0, this means  that the persent on this position is the second figter
             {
                 *fighter2 = array_of_keys[i];
                 *fighter2_array_number = i;
             }
-            if(array_of_keys[i] != -1)
+            if(array_of_keys[i] != -1) //every time we find alive (different of -1) fighter we decrease key1 and key2
             {
                 key1--;
                 key2--;

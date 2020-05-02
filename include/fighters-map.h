@@ -13,11 +13,11 @@ struct table{
     struct node **list;
 };
 
-struct table *createTable(int size);
-int hashCode(struct table *t,int key);
+struct table *create_table(int size);
+int hash_code(struct table *t,int key);
 void insert(struct table *t,int key,char *name, char health);
 struct node *lookup(struct table *t,int key);
-int readFightersFromFile(char *fileName);
+int read_fighters_from_file(char *file_name);
 int delete(struct table *t,int key);
 
 #endif /* FIGHTERS_MAP_H_ */

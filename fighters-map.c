@@ -6,7 +6,12 @@
 
 #include "fighters-map.h"
 
-struct table *createTable(int size)
+/***************************************************
+*   function name: create_table                    *
+*   function parameters: int size                  *
+*   function description: create table for map     *
+****************************************************/
+struct table *create_table(int size)
 {
     struct table *t = (struct table*)malloc(sizeof(struct table));
     t->size = size;
@@ -17,16 +22,27 @@ struct table *createTable(int size)
     return t;
 }
 
-int hashCode(struct table *t,int key)
+/***************************************************
+*   function name: hash_code                       *
+*   function parameters: struct table *t,int key   *
+*   function description: generate hash code       *
+****************************************************/
+int hash_code(struct table *t,int key)
 {
     if(key < 0)
         return -(key%t->size);
     return key%t->size;
 }
 
+/***************************************************
+*   function name: insert                          *
+*   function parameters: struct table *t,int key,  *
+*                        char *name, char health   *
+*   function description: insert node to map       *
+****************************************************/
 void insert(struct table *t,int key,char *name, char health)
 {
-    int pos = hashCode(t,key);
+    int pos = hash_code(t,key);
     struct node *list = t->list[pos];
     struct node *newNode = (struct node*)malloc(sizeof(struct node));
     struct node *temp = list;
@@ -47,9 +63,14 @@ void insert(struct table *t,int key,char *name, char health)
     t->list[pos] = newNode;
 }
 
+/***************************************************
+*   function name: lookup                          *
+*   function parameters: struct table *t,int key   *
+*   function description: find node into map       *
+****************************************************/
 struct node *lookup(struct table *t,int key)
 {
-    int pos = hashCode(t,key);
+    int pos = hash_code(t,key);
     struct node *list = t->list[pos];
     struct node *temp = list;
     while(temp)
@@ -63,20 +84,25 @@ struct node *lookup(struct table *t,int key)
     return NULL;
 }
 
+/***************************************************
+*   function name: delete                          *
+*   function parameters: struct table *t,int key   *
+*   function description: find and delete node     *
+****************************************************/
 int delete(struct table *t,int key)
 {
-    int pos = hashCode(t,key);
+    int pos = hash_code(t,key);
     struct node *list = t->list[pos];
     struct node **temp = &list;
-    struct node *e;
+    struct node *to_free;
     while(*temp)
     {
         if((*temp)->key==key)
         {
-            e = *temp;
-            *temp = e->next;
+            to_free = *temp;
+            *temp = to_free->next;
 
-            free(e);
+            free(to_free);
 
             return 1;
         }
@@ -86,14 +112,18 @@ int delete(struct table *t,int key)
 
 }
 
-
-int readFightersFromFile(char *fileName)
+/***************************************************
+*   function name: read_fighters_from_file         *
+*   function parameters: char *file_name           *
+*   function description: read nodes from file     *
+****************************************************/
+int read_fighters_from_file(char *file_name)
 {
     printf("in readFightersFromFile1\n");
     int key = 0;
     char *name = NULL;
     char health = 0;
-    int fd = open(fileName, O_RDONLY);
+    int fd = open(file_name, O_RDONLY);
     printf("in readFightersFromFile\n");
     if(fd < 0)
         return -1;
