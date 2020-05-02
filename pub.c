@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
 
     insert_people(t); //insert people to map
     
-    while(alive_people > 0) //loop running while there are stile alive people
+    while(alive_people > 1) //loop running while there are stile alive people
     {
         get_fighters(&fighter_map_key[0], &fighter_map_key[1], &fighter_array_number[0], &fighter_array_number[1]); //calling function to get 2 RANDOM fighters
 
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
         {
             fighters[i] = lookup(t, fighter_map_key[i]); //getting fighters nodes of map
             printf("fighter health: %d name: %s key: %d\n", fighters[i]->health, fighters[i]->name, fighters[i]->key);
-            if(pthread_create(&fighters_th[i], NULL, fighter_func, (void *)&fighters[i])) //creating fighter thread
+            if(pthread_create(&fighters_th[i], NULL, fighter_func, (void *) fighters[i])) //creating fighter thread
             {
                 printf("Error in creating posix thread!");
             }
@@ -47,13 +47,24 @@ int main(int argc, char *argv[])
         for(i = 0; i < NUM_THREADS; i++)
         {
             if(fighters[i]->health < 1) //if the fighter has no more health
-            {
+            {   
+                printf("Dead fighter %s\n", fighters[i]->name);
                 array_of_keys[fighter_array_number[i]] = -1; //set -1 value to array_of_keys to mark the fighter has no more health
+                if(!delete(t, fighters[i]->key)) //check is fighter deleted of map
+                {
+                    printf("fighter not deleted!\n");
+                }
+            }
+            else 
+            {
+                printf("WINNER: %s, HEALTH: %d\n", fighters[i]->name, fighters[i]->health);
             }
         }
 
         alive_people--;
     }
+
+    
     pthread_exit(NULL);
 
     //printf("%d %d\n", fighters[0], fighters[1]);
