@@ -63,15 +63,8 @@ int main(int argc, char *argv[])
 
         alive_people--;
     }
-
     
     pthread_exit(NULL);
-
-    //printf("%d %d\n", fighters[0], fighters[1]);
-    //struct node *fighter = lookup(t,5);
-    //printf("name:%s health:%d", fighter->name, fighter->health);
-    //int retVal = readFightersFromFile("pub-list.txt");
-
     sem_destroy(&lock);
     return 0;
 }
