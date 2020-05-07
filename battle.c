@@ -7,6 +7,11 @@
 #include "include/battle.h"
 #include "include/fighters-map.h"
 
+#define FULL_HEALTH_MAX_DAMAGE     20
+#define NOT_FULL_HEALTH_MAX_DAMAGE 100
+#define FULL_HEALTH                100
+#define MIN_HEALTH                 1
+
 /*0->NO dead fighter; 1->dead fighter*/
 char dead_fighter = 0;
 
@@ -27,16 +32,16 @@ void *fighter_func(void *args)
 
         if(is_fighter_health_full(&fighter)) //check is fighter health 100
         {
-            damage = (rand() % 20 + 1); //if true then damage can be between 1 and 20
+            damage = (rand() % FULL_HEALTH_MAX_DAMAGE + 1); //if true then damage can be between 1 and 20
         }
         else
         {
-            damage = (rand() % 100 + 1); //if false then damage can be between 1 and 100
+            damage = (rand() % NOT_FULL_HEALTH_MAX_DAMAGE + 1); //if false then damage can be between 1 and 100
         }
 
         fighter->health -= damage;
 
-        if(fighter->health < 1) //check is fighter health less than 1
+        if(fighter->health < MIN_HEALTH) //check is fighter health less than 1
         {
             dead_fighter = 1; //set there is death fighter
             sem_post(&lock);
@@ -58,7 +63,7 @@ void *fighter_func(void *args)
 ****************************************************/
 int is_fighter_health_full(struct node **fighter)
 {
-    if ((*fighter)->health == 100)
+    if ((*fighter)->health == FULL_HEALTH)
     {
         return 1;
     }

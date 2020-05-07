@@ -10,6 +10,7 @@
 
 #define NUM_THREADS   2
 #define ALL_PEOPLE    6
+#define MIN_HEALTH    1
 
 int alive_people = ALL_PEOPLE;
 int array_of_keys[ALL_PEOPLE];
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
 
         for(i = 0; i < NUM_THREADS; i++)
         {
-            if(fighters[i]->health < 1) //if the fighter has no more health
+            if(fighters[i]->health < MIN_HEALTH) //if the fighter has no more health
             {   
                 printf("Dead fighter %s\n", fighters[i]->name);
                 array_of_keys[fighter_array_number[i]] = -1; //set -1 value to array_of_keys to mark the fighter has no more health
