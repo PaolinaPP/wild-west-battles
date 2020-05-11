@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     struct node *fighters[NUM_THREADS];
     int fighter_map_key[NUM_THREADS], fighter_array_number[NUM_THREADS], i;
 
-    initialize_mutex(); //initialize mutex to use it later
+    initialize_semaphore(); //initialize semaphore to use it later
 
     insert_people(t); //insert people to map
     
@@ -88,16 +88,16 @@ void insert_people(struct table *t)
 }
 
 /***************************************************
-*   function name: initialize_mutex                *
+*   function name: initialize_semaphore            *
 *   function parameters: no parameters             *
-*   function description: initialize mutex to use  *
-*       it later in therads                        *
+*   function description: initialize semaphore to  *
+*            use it later in therads               *
 ****************************************************/
-void initialize_mutex()
+void initialize_semaphore()
 {
     if (sem_init(&lock, 0, 1) != 0)
     {
-        printf("\n Mutex initialization failed\n");
+        printf("\n Semaphore initialization failed\n");
     }
 }
 
