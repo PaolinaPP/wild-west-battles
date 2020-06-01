@@ -9,7 +9,7 @@
 #include "include/battle.h"
 
 #define NUM_THREADS   2
-#define ALL_PEOPLE    6
+#define ALL_PEOPLE    7
 #define MIN_HEALTH    1
 
 int alive_people = ALL_PEOPLE;
@@ -64,7 +64,20 @@ int main(int argc, char *argv[])
 
         alive_people--;
     }
-    
+
+    for(i = 0; i < NUM_THREADS; i++)
+    {
+        if(fighters[i]->health >= MIN_HEALTH) //if the fighter has health
+        {
+            if(!delete(t, fighters[i]->key)) //check is fighter deleted of map
+            {
+                printf("fighter not deleted!\n");
+            }
+        }
+    }
+    free(t->list);
+    free(t);
+
     pthread_exit(NULL);
     sem_destroy(&lock);
     return 0;
@@ -84,6 +97,7 @@ void insert_people(struct table *t)
     insert(t,4,"miro slav", 100);
     insert(t,5,"miro yo", 100);
     insert(t,6,"miro yvgfrvto", 100);
+    insert(t,7,"hey hey", 100);
     
 }
 

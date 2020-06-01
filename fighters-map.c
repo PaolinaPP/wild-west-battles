@@ -97,9 +97,9 @@ int delete(struct table *t,int key)
     struct node *to_free;
     while(*temp)
     {
-        if((*temp)->key==key)
+        to_free = *temp;
+        if(to_free->key==key)
         {
-            to_free = *temp;
             *temp = to_free->next;
 
             free(to_free);
